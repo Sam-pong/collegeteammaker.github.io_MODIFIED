@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon - College Team Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --text-dark: #333;
+            --text-light: #666;
+            --bg-light: #f5f7fa;
+            --white: #fff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--bg-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Background Shrine */
+        .background-shrine {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.03;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .shrine-pillar {
+            width: 80px;
+            height: 500px;
+            background: linear-gradient(to right, #8B4513, #654321, #8B4513);
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .shrine-left { left: -300px; }
+        .shrine-right { right: -300px; }
+        .shrine-roof-top {
+            position: absolute;
+            top: -80px;
+            left: -350px;
+            width: 700px;
+            height: 100px;
+            background: linear-gradient(to bottom, #B22222, #8B0000);
+            clip-path: polygon(10% 100%, 50% 0%, 90% 100%);
+        }
+        /* Coming Soon Container */
+        .coming-soon-container {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .torii-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .coming-soon-title {
+            font-family: 'Cinzel', serif;
+            font-size: 36px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        .coming-soon-subtitle {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .feature-list {
+            text-align: left;
+            display: inline-block;
+            margin: 30px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .progress-indicator {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 3px;
+            animation: progress 2s ease-out forwards;
+        }
+        @keyframes progress {
+            from { width: 0; }
+            to { width: 65%; }
+        }
+        .progress-text {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+        .notify-section {
+            margin-top: 35px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .notify-text {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .notify-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .notify-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .notify-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .notify-btn {
+            padding: 12px 30px;
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .notify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102,126,234,0.4);
+        }
+        /* Sakura Petals */
+        .sakura-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .sakura {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.5;
+            animation: fall linear infinite;
+        }
+        .sakura:nth-child(1) { left: 10%; animation-duration: 15s; animation-delay: 0s; }
+        .sakura:nth-child(2) { left: 20%; animation-duration: 12s; animation-delay: 2s; }
+        .sakura:nth-child(3) { left: 30%; animation-duration: 18s; animation-delay: 4s; }
+        .sakura:nth-child(4) { left: 40%; animation-duration: 14s; animation-delay: 1s; }
+        .sakura:nth-child(5) { left: 50%; animation-duration: 16s; animation-delay: 3s; }
+        .sakura:nth-child(6) { left: 60%; animation-duration: 13s; animation-delay: 5s; }
+        .sakura:nth-child(7) { left: 70%; animation-duration: 17s; animation-delay: 2s; }
+        .sakura:nth-child(8) { left: 80%; animation-duration: 15s; animation-delay: 4s; }
+        @keyframes fall {
+            0% {
+                top: -10%;
+                transform: translateX(0) rotate(0deg);
+            }
+            100% {
+                top: 110%;
+                transform: translateX(100px) rotate(360deg);
+            }
+        }
+        @media (max-width: 600px) {
+            .coming-soon-container {
+                padding: 40px 25px;
+            }
+            .coming-soon-title {
+                font-size: 28px;
+            }
+            .torii-icon {
+                font-size: 60px;
+            }
+            .notify-form {
+                flex-direction: column;
+            }
+            .notify-input {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sakura Petals -->
+    <div class="sakura-container">
+        <div class="sakura">🌸</div>
+        <div class="sakura">🌸</div>
+        <div class="sakura">🌸</div>
+        <div class="sakura">🌸</div>
+        <div class="sakura">🌸</div>
+        <div class="sakura">🌸</div>
+        <div class="sakura">🌸</div>
+        <div class="sakura">🌸</div>
+    </div>
+
+    <!-- Background Shrine -->
+    <div class="background-shrine">
+        <div class="shrine-pillar shrine-left"></div>
+        <div class="shrine-pillar shrine-right"></div>
+        <div class="shrine-roof-top"></div>
+    </div>
+
+    <!-- Coming Soon Container -->
+    <div class="coming-soon-container">
+        <div class="torii-icon">⛩️</div>
+        
+        <h1 class="coming-soon-title">Coming Soon</h1>
+        <p class="coming-soon-subtitle">
+            近日公開<br>
+            This feature is currently under development and will be available soon.
+        </p>
+
+   
+</body>
+</html>

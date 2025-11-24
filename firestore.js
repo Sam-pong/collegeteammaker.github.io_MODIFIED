@@ -33,13 +33,12 @@ const ALLOWED_PAGES = {
   ],
   public: [
     'login.html',
-    'index.html',
     'forgot-password.html'
   ]
 };
 
 function getCurrentPage() {
-  return window.location.pathname.split('/').pop() || 'dashboard.html';
+  return window.location.pathname.split('/').pop() || 'index.html';
 }
 
 function isPageAllowed(userType, page) {
