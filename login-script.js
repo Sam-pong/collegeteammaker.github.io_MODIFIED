@@ -239,73 +239,12 @@ function showTempleGateAnimation() {
     }
   }, 2000);
 }
-
-async function handleSignup() {
-  //alert("Sign up clicked!");
-
-  var username = document.getElementById("newUsername").value;
-  var email = document.getElementById("email").value;
-  var password = document.getElementById("newPassword").value;
-  var confirmPassword = document.getElementById("confirmPassword").value;
-
-  // alert(
-  //   "Values: " +
-  //     username +
-  //     ", " +
-  //     email +
-  //     ", " +
-  //     password +
-  //     ", " +
-  //     confirmPassword
-  // );
-
-  if (password.length < 6) {
-    showError("Password must be at least 6 characters long");
-    return;
-  }
-  if (
-    username === "" ||
-    email === "" ||
-    password === "" ||
-    confirmPassword === ""
-  ) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
-
-  var newUser = {
-    username: username,
-    email: email,
-    password: password,
-  };
-
-  const result = await signup(email, password, username);
-  if (result.success) {
-    window.location.href = "/signupprocess.html";
-  } else {
-    showError("Sign up failed: ", result.error);
-    return;
-  }
-
-  localStorage.setItem(
-    "user_" + username,
-    JSON.stringify({
-      ...newUser,
-      completedSecondStep: false,
-    })
-  );
-}
-
 async function signup(email, password, username) {
   try {
-    const supabaseClient =supabase;
+    console.log("=== Signup Attempt ===");
 
-    const { data: existingUsers, error: queryError } = await supabaseClient
+    // Step 1: Check if username exists
+    const { data: existingUsers, error: queryError } = await window.supabase
       .from("Users")
       .select("id")
       .eq("username", username)
@@ -313,15 +252,17 @@ async function signup(email, password, username) {
 
     if (queryError) {
       console.error("Username check error:", queryError);
-      return { success: false, error: "Database error checking username" };
+      return { success: false, error: "Database error. Please try again." };
     }
 
     if (existingUsers && existingUsers.length > 0) {
       return { success: false, error: "Username already exists" };
     }
 
+    // Step 2: Create auth user
+    console.log("Creating auth user...");
     const { data: authData, error: authError } =
-      await supabaseClient.auth.signUp({
+      await window.supabase.auth.signUp({
         email: email,
         password: password,
       });
@@ -331,49 +272,91 @@ async function signup(email, password, username) {
       return { success: false, error: authError.message };
     }
 
-    const user = authData.user;
+    if (!authData?.user) {
+      console.error("No user returned from signUp");
+      return { success: false, error: "Account creation failed" };
+    }
 
-    const { error: insertError } = await supabaseClient.from("Users").insert({
-      uuid: user.id,
-      email: email,
-      username: username,
-      verified: false,
-    });
+    const userId = authData.user.id;
+    console.log("Auth user created:", userId);
+
+    // Step 3: Create user profile in database
+    console.log("Creating user profile...");
+    const { error: insertError } = await window.supabase
+      .from("Users")
+      .insert({
+        uuid: userId,
+        email: email,
+        username: username,
+        verified: false,
+      });
 
     if (insertError) {
       console.error("User profile creation error:", insertError);
-
-      try {
-        await supabaseClient.from("Users").insert({
-          uuid: user.id,
-          email: email,
-          username: username + "_failed_" + Date.now(),
-        });
-      } catch (cleanupError) {
-        console.error("Cleanup also failed:", cleanupError);
-      }
-
       return {
         success: false,
         error: "Account creation failed. Please try again.",
       };
     }
 
+    console.log("Signup completed successfully");
     return {
       success: true,
-      user: user,
-      message:
-        "Account created successfully! Please check your email to verify your account.",
+      user: authData.user,
+      message: "Account created successfully! Please check your email to verify.",
     };
+
   } catch (error) {
     console.error("Signup error:", error);
     return {
       success: false,
-      error: "An unexpected error occurred. Please try again.",
+      error: error.message || "An unexpected error occurred",
     };
   }
 }
 
+async function handleSignup(e) {
+  e.preventDefault();
+  clearError(true);
+
+  const username = document.getElementById("newUsername").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  // Validation
+  if (!username || !email || !password || !confirmPassword) {
+    showError("Please fill all fields", true);
+    return;
+  }
+
+  if (password.length < 6) {
+    showError("Password must be at least 6 characters long", true);
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    showError("Passwords do not match", true);
+    return;
+  }
+
+  setButtonState("signupBtn", true, "Creating account...");
+
+  const result = await signup(email, password, username);
+
+  if (result.success) {
+    console.log("Signup successful");
+    showError("✓ Account created! Redirecting to signup process...", true);
+    
+    setTimeout(() => {
+      window.location.href = "signupprocess.html";
+    }, 2000);
+  } else {
+    console.error("Signup failed:", result.error);
+    showError("Signup failed: " + result.error, true);
+    setButtonState("signupBtn", false, "Sign Up");
+  }
+}
 function showError(message) {
   const errorLabel = document.getElementById("errorLabel");
   errorLabel.textContent = message;

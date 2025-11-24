@@ -141,20 +141,33 @@ function setUserRole(role) {
 }
 
 async function logout() {
-    localStorage.removeItem('currentUser');
-    Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('user_')) {
-            localStorage.removeItem(key);
+    try {
+        // Clear localStorage first
+        localStorage.removeItem('currentUser');
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('user_')) {
+                localStorage.removeItem(key);
+            }
+        });
+        
+        // Wait for Supabase signOut to complete
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Error signing out:', error.message);
+            // Continue with redirect even if Supabase fails
         }
-    });
+        
+        // Redirect after signOut completes
+        window.location.href = 'login.html';
+        
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Still redirect even if there's an error
+        window.location.href = 'login.html';
+    }
     
-    await window.supabase.auth.signOut();
-    
-    window.location.href = 'login.html';
-    
-    return false; 
-}   
-
+    return false;
+}
 document.addEventListener("DOMContentLoaded", function () {
   initializeDashboard();
 });
