@@ -75,7 +75,7 @@ async function login(username, password) {
     console.log("Username:", username);
 
     // Step 1: Query user by username
-    const { data: users, error: queryError } = await window.supabase
+    const { data: users, error: queryError } = await supabase
       .from("Users")
       .select("*")
       .eq("username", username)
@@ -97,7 +97,7 @@ async function login(username, password) {
 
     // Step 2: Authenticate with Supabase Auth
     const { data: authData, error: authError } =
-      await window.supabase.auth.signInWithPassword({
+      await supabase.auth.signInWithPassword({
         email: userEmail,
         password: password,
       });
@@ -116,7 +116,7 @@ async function login(username, password) {
 
     // Step 3: Ensure session is set
     console.log("Setting session...");
-    await window.supabase.auth.setSession(authData.session);
+    await supabase.auth.setSession(authData.session);
     
     // Step 4: Wait for session to persist
     console.log("Waiting for session to persist...");
@@ -303,7 +303,7 @@ async function handleSignup() {
 
 async function signup(email, password, username) {
   try {
-    const supabaseClient = window.supabase || supabase;
+    const supabaseClient =supabase;
 
     const { data: existingUsers, error: queryError } = await supabaseClient
       .from("Users")
